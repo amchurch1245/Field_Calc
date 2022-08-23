@@ -311,7 +311,7 @@
         for (key in dict) {
             molar_mass_output += (dict[key]["in_val"] * (dict[key]["molar_mass"] / 100));
         };
-        document.getElementById("molar-mass").innerHTML = "<p>Molar Mass: <span>" + molar_mass_output.toFixed(4) + "</span></p>";
+        document.getElementById("molar-mass").innerHTML = "<p>Molar Mass: <span>" + molar_mass_output.toFixed(4) + " g/mol</span></p>";
 
         //summation factor  
         for (key in dict) {
@@ -364,8 +364,7 @@
         hhv_output = sum_ideal_gas_mole_h / (1 - (Math.pow(sum_sum_factor_mole, 2)))
         lhv_output = sum_ideal_gas_mole_l / (1 - (Math.pow(sum_sum_factor_mole, 2)))
         
-        ghvOutputRequirements('hhv-output', hhv_output)
-        ghvOutputRequirements('lhv-output', lhv_output)
+        ghvOutputRequirements('hhv-output', hhv_output, lhv_output)
 
         getMN()
 
@@ -410,18 +409,18 @@
         };
     }
 
-    function ghvOutputRequirements (outputName, outputNum) {
-        if (outputName == 'hhv-output') {title = 'HHV'}
-        else if (outputName == 'lhv-output') {title = 'LHV'}
-        
-        if (outputNum < 850) {
-            document.getElementById(outputName).innerHTML = "<p>" + title + ": <span style='color:red;'>" + outputNum.toFixed(4) + "</span></p>";
+    function ghvOutputRequirements (outputName, hhv, lhv) {      
+        if (hhv < 850) {
+            document.getElementById(outputName).innerHTML = "<p>HHV: <span style='color:red;'>" + hhv.toFixed(4) + " Btu/scf</span></p>";
+            document.getElementById('lhv-output').innerHTML = "<p>LHV: <span style='color:red;'>" + lhv.toFixed(4) + " Btu/scf</span></p>";
         }
-        else if (outputNum > 850 && outputNum < 2200) {
-            document.getElementById(outputName).innerHTML = "<p>" + title + ": <span style='color:orange;'>" + outputNum.toFixed(4) + "</span></p>";
+        else if (hhv > 1500 && hhv < 2200) {
+            document.getElementById(outputName).innerHTML = "<p>HHV: <span style='color:orange;'>" + hhv.toFixed(4) + " Btu/scf</span></p>";
+            document.getElementById('lhv-output').innerHTML = "<p>LHV: <span style='color:orange;'>" + lhv.toFixed(4) + " Btu/scf</span></p>";
         }
         else {
-            document.getElementById(outputName).innerHTML = "<p>" + title + ": <span style='color:green;'>" + outputNum.toFixed(4) + "</span></p>";
+            document.getElementById(outputName).innerHTML = "<p>HHV: <span style='color:green;'>" + hhv.toFixed(4) + " Btu/scf</span></p>";
+            document.getElementById('lhv-output').innerHTML = "<p>LHV: <span style='color:green;'>" + lhv.toFixed(4) + " Btu/scf</span></p>";
         }
     }
 
@@ -436,7 +435,7 @@
         if (mn < 40) {
             document.getElementById("methane-number").innerHTML = "<p>Methane Number: <span style='color:red'>" + mn.toFixed(4) + "</span></p>"
         }
-        else if (mn > 40 && mn < 50) {
+        else if (mn > 40 && mn < 60) {
             document.getElementById("methane-number").innerHTML = "<p>Methane Number: <span style='color:orange'>" + mn.toFixed(4) + "</span></p>"
         }
         else {
