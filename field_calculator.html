@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body onload="preloadSamples();" style="background-color: #f1f2f7; ">
+    <div id="calculator-form" style="font-family: Poppins,Helvetica,sans-serif;">
+        <div class="header">
+            <img alt="Logo" src="https://mesa.azureedge.net/mesa/desktop-nav.png" />
+            <h2 id="header-text">
+                Mesa Solutions Field Calculator
+                <button onclick="window.print();" id="btn-print">
+                    Print
+                </button>
+            </h2>
+        </div>
+        <div class="body-background">
+            <div>
+                <h3 style="padding-left: 5px; color: #595d6e;">Fuel Calculator</h3>
+                <div class="cols">
+                    <div id="col1" style="text-align: left;">
+                        <table>
+                            <tbody>
+                                <!--begin user inputs-->
+                                <tr>
+                                    <td>Base Temperature</td>
+                                    <td>
+                                        <input id="base-temp" type="number" tabindex="101" > °F 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Base Pressure</td>
+                                    <td>
+                                        <input id="base-press" type="number" tabindex="101" > psia
+                                    </td>
+                                </tr>
+                                <tr hidden="true">
+                                    <td>Engine Load</td>
+                                    <td>
+                                        <input id="engine-load" type="number" tabindex="101" > %
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Methane, CH<sub>4</sub></td>
+                                    <td>
+                                        <input id="methane" type="number" tabindex="101" > %
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Ethane, C<sub>2</sub>H<sub>6</sub></td>
+                                    <td>
+                                        <input type="number" id="ethane" tabindex="101" > %
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Propane, C<sub>3</sub>H<sub>8</sub></td>
+                                    <td>
+                                        <input type="number" id="propane" tabindex="101" > %
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Iso-Butane, C<sub>4</sub>H<sub>10</sub></td>
+                                    <td>
+                                        <input type="number" id="iso_butane" tabindex="101" > %
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>n-Butane, C<sub>4</sub>H<sub>10</sub></td>
+                                    <td>
+                                        <input type="number" id="n_butane" tabindex="101" > %
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Iso-Pentane, C<sub>5</sub>H<sub>12</sub></td>
+                                    <td>
+                                        <input type="number" id="iso_pentane" tabindex="101" > %
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>n-Pentane, C<sub>5</sub>H<sub>12</sub></td>
+                                    <td>
+                                        <input type="number" id="n_pentane" tabindex="101" > %
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>n-Hexane, C<sub>6</sub>H<sub>14</sub></td>
+                                    <td>
+                                        <input type="number" id="n_hexane" tabindex="101" > %
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>n-Heptane, C<sub>7</sub>H<sub>16</sub></td>
+                                    <td>
+                                        <input type="number" id="n_heptane" tabindex="101" > %
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>n-Octane, C<sub>8</sub>H<sub>18</sub></td>
+                                    <td>
+                                        <input type="number" id="n_octane" tabindex="101" > %
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>n-Nonane, C<sub>9</sub>H<sub>20</sub></td>
+                                    <td>
+                                        <input type="number" id="n_nonane" tabindex="101" > %
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Hydrogen, H<sub>2</sub></td>
+                                    <td>
+                                        <input type="number" id="hydrogen" tabindex="101" > %
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Helium, He</td>
+                                    <td>
+                                        <input type="number" id="helium" tabindex="101" > %
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Nitrogen, N<sub>2</sub></td>
+                                    <td>
+                                        <input type="number" id="nitrogen" tabindex="101" > %
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Oxygen, O<sub>2</sub></td>
+                                    <td>
+                                        <input type="number" id="oxygen" tabindex="101" > %
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Carbon Dioxide, CO<sub>2</sub></td>
+                                    <td>
+                                        <input type="number" id="carbon_dioxide" tabindex="101" > %
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Hydrogen Sulfide, H<sub>2</sub>S</td>
+                                    <td>
+                                        <input type="number" id="hydrogen_sulfide" tabindex="101" > ppm
+                                    </td>
+                                </tr>
+                                <!--end user inputs-->
+                            </tbody>
+                        </table>
+                        <button onclick=getResults(); id="btn-submit">
+                            Submit
+                        </button>
+                    </div>
+
+                    <!--begin calculator outputs-->
+                    <div id="col2">
+                        <div id="sample-percentage"></div>
+                        <div id="molar-mass"></div>
+                        <div id="relative-density"></div>
+                        <div id=hhv-output></div>
+                        <div id=lhv-output></div>
+                        <div id=methane-number></div>
+                        <div id="gasses-concentration"></div>
+                        <div id="h2"></div>
+                        <div id="h2s"></div>
+                    </div>
+                    <!--end calculator outputs-->
+                </div> 
+            </div>
+            <h6 id="warning">Please note that fuel ratings are a calculated estimation; engine output during prolonged operation cannot be accurately predicted. Any performance ratings for non-standard gas are for informational purposes only.</h6>
+        </div>
+</body>
+</html>
+
+<!--begin component styles-->
+<style>
+    .header img {
+        float: left;
+        background-color: #212529;
+        color: white;
+        margin-top: 10px;
+        margin-left: 20px;
+        margin-bottom: 5px;
+    }
+
+    .header h2 {
+        text-align: center;
+        background-color: #212529;
+        color: white;
+        padding-top: 25px;
+        padding-bottom: 25px;
+        margin: 0px;
+    }
+
+    #btn-print {
+        padding: 0 8px 0 8px;
+        margin-top: 5px;
+        margin-right: 20px;
+        float: right;
+        color: black;
+    }
+
+    .body-background {
+        background-color: #f1f2f7;
+        padding: 5px 20px 10px 20px;
+    }
+
+    #calculator-form table {
+        padding-left: 40px;
+        padding-top: 25px;
+        padding-bottom: 25px;
+        width: 150%;
+
+    }
+
+    #calculator-form .cols {
+        display: flex;
+        background-color: white;
+        border-radius: 25px;
+        width:fit-content;
+    }
+
+    #col1 td {
+        padding-bottom: 8px;
+    }
+
+    #col1 input {
+        width: 27%
+    }
+
+    #btn-submit {
+        margin-bottom: 20px;
+        margin-left: 40px;
+    }
+
+    #col2 {
+        float: right;
+        padding-right: 50px;
+        padding-left: 200px;
+        width: 300px;
+        height: 120px;
+        text-align: center;
+        padding-top: 225px;
+    }
+</style>
+<!--end component styles-->
+
+<!--begin javascript-->
+<script>
+    //constants
+    var RGAS = 8.314472;
+    var AIR_MASS = 28.9625;
+    var TS = 298.15;
+    var tb, pbsi, dhw, air_b, air_z;
+
+    function preloadSamples() {
+        dict = getDict();
+
+        //set values in dictionary based on if user has inputted something
+        for (key in dict) {
+            if (dict[key]["in_val"] == '') {document.getElementById(key).value = dict[key]["val_preload"];}
+            dict[key]["in_val"] = document.getElementById(key).value;
+        };
+
+        getResults();
+    }
+
+    //set values based on startup or submit button click
+    function getResults() {
+        if (document.getElementById("base-temp").value == '' || document.getElementById("base-press").value == "" || document.getElementById("engine-load").value == '' || document.getElementById("hydrogen_sulfide").value == '') {
+            //set preloads, this should only set once on loadup. After, they will always have value
+            document.getElementById("base-temp").value = 60;
+            document.getElementById("base-press").value = 14.73;
+            document.getElementById("engine-load").value = 100;
+            document.getElementById("hydrogen_sulfide").value = 0;
+        };
+
+        baseTemp = document.getElementById("base-temp").value;
+        basePress = document.getElementById("base-press").value;
+        engineLoad = document.getElementById("engine-load").value;
+
+        //set h2s for pass fail
+        hydrogen_sulfide = document.getElementById("hydrogen_sulfide").value;
+
+        tb = ((baseTemp - 32) / 1.8) + 273.15;
+        pbsi = basePress * 6.894757293;
+        molar_volume = RGAS * (tb / pbsi);
+        dhw = -75.29 * (TS - tb);
+        air_b = -0.1257 + 0.000591 * tb - 0.000000662 * Math.pow(tb, 2);
+        air_z = 1 + (air_b * pbsi) / (RGAS * tb);
+
+        //set values in dictionary. default in_val is val_preload. if '' means user deleted value, must set to 0 
+        for (key in dict) {
+            dict[key]["in_val"] = document.getElementById(key).value;
+            if (dict[key]["in_val"] == '') {dict[key]["in_val"] = 0;}
+        };
+
+        //total percent
+        tot_percent = 0;
+        for (key in dict) {tot_percent += Number(dict[key]["in_val"])};
+        
+        if (tot_percent > 100 || tot_percent < 0) {
+            document.getElementById("sample-percentage").innerHTML = "<p>Sample Percentage: <span style='color: red;'>" + tot_percent.toFixed(2) + "%</span></p>"
+        }
+        else {
+            document.getElementById("sample-percentage").innerHTML = "<p>Sample Percentage: <span style='color: green;'>" + tot_percent.toFixed(2) + "%</span></p>"
+        }
+
+        //molar mass output = SUM(mole fraction (inputted) * molar mass (hardcoded))
+        //(val / 100) * molar_mass
+        molar_mass_output = 0;
+        for (key in dict) {
+            molar_mass_output += (dict[key]["in_val"] * (dict[key]["molar_mass"] / 100));
+        };
+        document.getElementById("molar-mass").innerHTML = "<p>Molar Mass: <span>" + molar_mass_output.toFixed(4) + "</span></p>";
+
+        //summation factor  
+        for (key in dict) {
+            dict[key]["sum_factor"]["b"] = (dict[key]["b_eqn"]["a"] + (dict[key]["b_eqn"]["b"] * tb) + (dict[key]["b_eqn"]["c"] * tb * tb) + (dict[key]["b_eqn"]["d"] * tb * tb * tb));
+            dict[key]["sum_factor"]["s"] = Math.pow(Math.abs((dict[key]["sum_factor"]["b"] * pbsi) / (RGAS * tb)), .5)
+        };
+
+        //relative density
+        sum_mole_fract_molar_mass = 0;
+        sum_mole_fract_summation = 0;
+        for (key in dict) {
+            sum_mole_fract_molar_mass += (dict[key]["in_val"] * (dict[key]["molar_mass"] / 100));
+            sum_mole_fract_summation += (dict[key]["in_val"] * (dict[key]["sum_factor"]["s"]) / 100);
+        };
+        relative_density = ((sum_mole_fract_molar_mass / AIR_MASS) * (air_z / (1 - Math.pow(sum_mole_fract_summation, 2))) * (AIR_MASS / molar_volume));
+        document.getElementById("relative-density").innerHTML = "<p>Relative Density: <span>" + relative_density.toFixed(4) + "</span></p>";
+
+        //GHV
+        //dhi in enthalpy
+        for (key in dict) {
+            e = dict[key]["cpi"]["a"] * RGAS * (tb - TS);
+            f = dict[key]["cpi"]["b"] * Math.pow(10, -2) * RGAS * ((Math.pow((tb - 273.15), 2) - Math.pow((TS - 273.15), 2)) / 2);
+            g = dict[key]["cpi"]["c"] * Math.pow(10, -5) * RGAS * ((Math.pow((tb - 273.15), 3) - Math.pow((TS - 273.15), 3)) / 3);
+            dict[key]["enthalpy"]["dhi"] = e + f + g;
+        };
+        //enthalpy change 
+        for (key in dict) {
+            i = dict[key]["sc_coeff"]["oxy"] * dict["oxygen"]["enthalpy"]["dhi"];
+            j = dict[key]["sc_coeff"]["wat"] * dhw;
+            k = dict[key]["sc_coeff"]["wat"] * getWaterDhi();
+            l = dict[key]["sc_coeff"]["car"] * dict["carbon_dioxide"]["enthalpy"]["dhi"];
+            m = dict[key]["sc_coeff"]["sul"] * getSulferDhi();
+            dict[key]["enthalpy"]["ghv"] = -dict[key]["enthalpy"]["dhi"] + i + j + l + m;
+            dict[key]["enthalpy"]["lhv"] = -dict[key]["enthalpy"]["dhi"] + i + k + l + m;
+        };
+        //ideal hhv and ideal lhv
+        getIdeal()
+
+        //sum(summation factor * mole Fraction) and sum(ideal gas * mole fraction) hhv
+        sum_sum_factor_mole = 0;
+        sum_ideal_gas_mole_h = 0;
+        sum_ideal_gas_mole_l = 0;
+        for (key in dict) {
+            mole_fraction = dict[key]["in_val"] / 100;
+            sum_sum_factor_mole += mole_fraction * dict[key]["sum_factor"]["s"];
+            sum_ideal_gas_mole_h += mole_fraction * dict[key]["ideal_ghv"];
+            sum_ideal_gas_mole_l += mole_fraction * dict[key]["ideal_lhv"];
+        };
+
+        hhv_output = sum_ideal_gas_mole_h / (1 - (Math.pow(sum_sum_factor_mole, 2)))
+        lhv_output = sum_ideal_gas_mole_l / (1 - (Math.pow(sum_sum_factor_mole, 2)))
+        
+        ghvOutputRequirements('hhv-output', hhv_output)
+        ghvOutputRequirements('lhv-output', lhv_output)
+
+        getMN()
+
+        //other possible failures
+        failPopUps();
+    };
+
+    function getWaterDhi() {
+        e = 4.0280005 * RGAS * (tb - TS);
+        f = 0.039616283 * Math.pow(10, -2) * RGAS * (((Math.pow((tb - 273.15), 2)) - (Math.pow((TS - 273.15), 2))) / 2);
+        g = 0.27421031 * Math.pow(10, -5) * RGAS * (((Math.pow((tb - 273.15), 3)) - (Math.pow((TS - 273.15), 3))) / 3);
+        h = e + f + g;
+        return h;
+    }
+
+    function getSulferDhi() {
+        e = 4.6867423 * RGAS * (tb - TS);
+        f = 0.43239642 * Math.pow(10, -2) * RGAS * (((Math.pow((tb - 273.15), 2)) - (Math.pow((TS - 273.15), 2))) / 2);
+        g = 0.03957661 * Math.pow(10, -5) * RGAS * (((Math.pow((tb - 273.15), 3)) - (Math.pow((TS - 273.15), 3))) / 3);
+        h = e + f + g;
+        return h;
+    }
+
+    function getIdeal() {
+        getDict()
+        for (key in dict) {
+            c = Math.abs(dict[key]["sc_coeff"]["car"] * dict["carbon_dioxide"]["hf"] + dict[key]["sc_coeff"]["wat"] * (-241.814 - 44.016) - dict[key]["hf"]);
+            e = c - (.001 * dict[key]["enthalpy"]["ghv"]);
+            i = (e / molar_volume / (Math.pow(10, -6) * (1055.05585262 / Math.pow(.3048, 3))));
+            
+            d = Math.abs(dict[key]["sc_coeff"]["car"] * dict["carbon_dioxide"]["hf"] + dict[key]["sc_coeff"]["wat"] * -241.814 - dict[key]["hf"]);
+            f = d - (.001 * dict[key]["enthalpy"]["lhv"]);
+            j = (f / molar_volume / (Math.pow(10, -6) * (1055.05585262 / Math.pow(.3048, 3))));
+            if (key == "carbon_dioxide" || i < 0) {
+                i = 0;
+            };
+            if (key == "carbon_dioxide" || j < 0) {
+                j = 0;
+            };
+            dict[key]["ideal_ghv"] = i;
+            dict[key]["ideal_lhv"] = j;
+        };
+    }
+
+    function ghvOutputRequirements (outputName, outputNum) {
+        if (outputName == 'hhv-output') {title = 'HHV'}
+        else if (outputName == 'lhv-output') {title = 'LHV'}
+        
+        if (outputNum < 850) {
+            document.getElementById(outputName).innerHTML = "<p>" + title + ": <span style='color:red;'>" + outputNum.toFixed(4) + "</span></p>";
+        }
+        else if (outputNum > 850 && outputNum < 2200) {
+            document.getElementById(outputName).innerHTML = "<p>" + title + ": <span style='color:orange;'>" + outputNum.toFixed(4) + "</span></p>";
+        }
+        else {
+            document.getElementById(outputName).innerHTML = "<p>" + title + ": <span style='color:green;'>" + outputNum.toFixed(4) + "</span></p>";
+        }
+    }
+
+    function getMN() {
+        sum_hc_i = 0;
+        for (key in dict) {
+            sum_hc_i += dict[key]['hc_ratio'] * (dict[key]['in_val'] / 100)
+        }
+        mon = -406.14 + (508.04 * sum_hc_i) - (173.55 * Math.pow(sum_hc_i,2)) + (20.17 * Math.pow(sum_hc_i, 3))
+        mn = 1.624 * mon - 119.1
+        
+        if (mn < 40) {
+            document.getElementById("methane-number").innerHTML = "<p>Methane Number: <span style='color:red'>" + mn.toFixed(4) + "</span></p>"
+        }
+        else if (mn > 40 && mn < 50) {
+            document.getElementById("methane-number").innerHTML = "<p>Methane Number: <span style='color:orange'>" + mn.toFixed(4) + "</span></p>"
+        }
+        else {
+            document.getElementById("methane-number").innerHTML = "<p>Methane Number: <span style='color:green'>" + mn.toFixed(4) + "</span></p>"
+        }
+    }
+
+    function failPopUps() {
+        getDict()       
+        //inert gasses concentration failure / warning
+        gasses_concentration = Number(dict['helium']["in_val"]) + Number(dict['nitrogen']["in_val"]) + Number(dict['oxygen']["in_val"]) + Number(dict['carbon_dioxide']["in_val"])
+        if (gasses_concentration > 20) {
+            document.getElementById('gasses-concentration').innerHTML = "<p><span style='color:red;'>Inert Gasses Concentration Failure: " + gasses_concentration + "%</span></p>";
+        }
+        else if (gasses_concentration < 20 && gasses_concentration > 5) {
+            document.getElementById('gasses-concentration').innerHTML = "<p><span style='color:orange;'>Inert Gasses Concentration Warning: " + gasses_concentration + "%</span></p>";
+        }
+        else {document.getElementById('gasses-concentration').innerHTML = "<p hidden=true></p>";}
+        //hydrogen failure
+        if (dict['hydrogen']['in_val'] > 1) {
+            document.getElementById('h2').innerHTML = "<p><span style='color:red;'>Hydrogen Failure: " + dict['hydrogen']['in_val'] + "%</span></p>";
+        }
+        else {document.getElementById('h2').innerHTML = "<p hidden=true></p>"}
+        //hydrogen sulfide failure
+        if (hydrogen_sulfide > 10) {
+            document.getElementById('h2s').innerHTML = "<p><span style='color:red;'>Hydrogen Sulfide Failure: " + hydrogen_sulfide + "ppm</span></p>";
+        }
+        else {document.getElementById('h2s').innerHTML = "<p hidden=true></p>"}    
+    }
+
+    function getDict() {
+        //dictionary that stores hardcoded numbers and user inputted values based on each element
+        //referenced: dict[key]["val_preload"]
+        var dict = {
+            methane: { //1
+                val_preload: 47.2321,
+                in_val: document.getElementById("methane").value,
+                molar_mass: 16.0425,
+                hf: -74.54,
+                sum_factor: {
+                    b: '',
+                    s: '',
+                },
+                sc_coeff: {
+                    oxy: -2,
+                    wat: 2,
+                    car: 1,
+                    sul: 0,
+                },
+                enthalpy: {
+                    dhi: '',
+                    ghv: '',
+                    lhv: '',
+                },
+                ideal_ghv: '',
+                ideal_lhv: '', 
+                hc_ratio: 4,
+                cpi: {
+                    a: 4.1941264,       //(dict[key]["cpi"]["a"])
+                    b: 0.35829459,
+                    c: 1.7683615,
+                },
+                b_eqn: {
+                    a: -0.49007801,
+                    b: 0.0032827956,
+                    c: -0.0000082081892,
+                    d: 0.0000000074728523,
+                }
+            },
+            ethane: { //2
+                val_preload: 23.4620,
+                in_val: document.getElementById("ethane").value,
+                molar_mass: 30.0690,
+                hf: -83.82,
+                sum_factor: {
+                    b: '',
+                    s: '',
+                },
+                sc_coeff: {
+                    oxy: -3.5,
+                    wat: 3,
+                    car: 2,
+                    sul: 0,
+                },
+                enthalpy: {
+                    dhi: '',
+                    ghv: '',
+                    lhv: '',
+                },
+                ideal_ghv: '',
+                ideal_lhv: '', 
+                hc_ratio: 3,
+                cpi: {
+                    a: 5.9588285,
+                    b: 1.3666173,
+                    c: 1.720157,
+                },
+                b_eqn: {
+                    a: -1.9340481,
+                    b: 0.013321546,
+                    c: -0.000034642088,
+                    d: 0.000000032324218,
+                }
+            },
+            propane: { //3
+                val_preload: 13.9252,
+                in_val: document.getElementById("propane").value,
+                molar_mass: 44.0956,
+                hf: -104.68,
+                sum_factor: {
+                    b: '',
+                    s: '',
+                },
+                sc_coeff: {
+                    oxy: -5,
+                    wat: 4,
+                    car: 3,
+                    sul: 0,
+                },
+                enthalpy: {
+                    dhi: '',
+                    ghv: '',
+                    lhv: '',
+                },
+                ideal_ghv: '', 
+                ideal_lhv: '', 
+                hc_ratio: 8/3,
+                cpi: {
+                    a: 8.2430809,
+                    b: 2.2646107,
+                    c: 1.7833036,
+                },
+                b_eqn: {
+                    a: -5.0978896,
+                    b: 0.037357889,
+                    c: -0.00010116519,
+                    d: 0.000000096664796,
+                },
+            },
+            iso_butane: { //4
+                val_preload: 1.6214,
+                in_val: document.getElementById("iso_butane").value,
+                molar_mass: 58.1222,
+                hf: -134.99,
+                sum_factor: {
+                    b: '',
+                    s: '',
+                },
+                sc_coeff: {
+                    oxy: -6.5,
+                    wat: 5,
+                    car: 4,
+                    sul: 0,
+                },
+                enthalpy: {
+                    dhi: '',
+                    ghv: '',
+                    lhv: '',
+                },
+                ideal_ghv: '', 
+                ideal_lhv: '', 
+                hc_ratio: 2.5,
+                cpi: {
+                    a: 10.8169970,
+                    b: 3.17722960,
+                    c: 1.87669950,
+                },
+                b_eqn: {
+                    a: -8.9921356,
+                    b: 0.067231035,
+                    c: -0.00018444003,
+                    d: 0.00000017780978,
+                },
+            },
+            n_butane: { //5
+                val_preload: 4.7131,
+                in_val: document.getElementById("n_butane").value,
+                molar_mass: 58.1222,
+                hf: -125.79,
+                sum_factor: {
+                    b: '',
+                    s: '',
+                },
+                sc_coeff: {
+                    oxy: -6.5,
+                    wat: 5,
+                    car: 4,
+                    sul: 0,
+                },
+                enthalpy: {
+                    dhi: '',
+                    ghv: '',
+                    lhv: '',
+                },
+                ideal_ghv: '', 
+                ideal_lhv: '', 
+                hc_ratio: 2.5,
+                cpi: {
+                    a: 11.0988330,
+                    b: 2.91575680,
+                    c: 2.67822360,
+                },
+                b_eqn: {
+                    a: -11.40354,
+                    b: 0.086905916,
+                    c: -0.00024090495,
+                    d: 0.0000002337427,
+                }
+            },
+            iso_pentane: { //6
+                val_preload: 0.9721,
+                in_val: document.getElementById("iso_pentane").value,
+                molar_mass: 72.1488,
+                hf: -153.7,
+                sum_factor: {
+                    b: '',
+                    s: '',
+                },
+                sc_coeff: {
+                    oxy: -8,
+                    wat: 6,
+                    car: 5,
+                    sul: 0,
+                },
+                enthalpy: {
+                    dhi: '',
+                    ghv: '',
+                    lhv: '',
+                },
+                ideal_ghv: '', 
+                ideal_lhv: '', 
+                hc_ratio: 2.4,
+                cpi: {
+                    a: 13.2659070,
+                    b: 4.14387400,
+                    c: -0.44459765,
+                },
+                b_eqn: {
+                    a: -20.234239,
+                    b: 0.15888141,
+                    c: -0.00044835287,
+                    d: 0.00000043972857,
+                }
+            },
+            n_pentane: { //7
+                val_preload: 1.313 + 0.1004,
+                in_val: document.getElementById("n_pentane").value,
+                molar_mass: 72.1488,
+                hf: -146.76,
+                sum_factor: {
+                    b: '',
+                    s: '',
+                },
+                sc_coeff: {
+                    oxy: -8,
+                    wat: 6,
+                    car: 5,
+                    sul: 0,
+                },
+                enthalpy: {
+                    dhi: '',
+                    ghv: '',
+                    lhv: '',
+                },
+                ideal_ghv: '', 
+                ideal_lhv: '', 
+                hc_ratio: 2.4,
+                cpi: {
+                    a: 13.5383120,
+                    b: 3.49188670,
+                    c: 4.11040320,
+                },
+                b_eqn: {
+                    a: -23.425658,
+                    b: 0.18505146,
+                    c: -0.00052396238,
+                    d: 0.00000051509373,
+                }
+            },
+            n_hexane: { //8
+                val_preload: 0.4598 + 0.2511 + 0.5496,
+                in_val: document.getElementById("n_hexane").value,
+                molar_mass: 86.17536,
+                hf: -166.92,
+                sum_factor: {
+                    b: '',
+                    s: '',
+                },
+                sc_coeff: {
+                    oxy: -9.5,
+                    wat: 7,
+                    car: 6,
+                    sul: 0,
+                },
+                enthalpy: {
+                    dhi: '',
+                    ghv: '',
+                    lhv: '',
+                },
+                ideal_ghv: '', 
+                ideal_lhv: '', 
+                hc_ratio: 7/3,
+                cpi: {
+                    a: 16.0745150,
+                    b: 4.17965310,
+                    c: 4.82740980,
+                },
+                b_eqn: {
+                    a: -44.762737,
+                    b: 0.35888646,
+                    c: -0.0010218399,
+                    d: 0.0000010068068,
+                }
+            },
+            n_heptane: { //9
+                val_preload: 1.9147 + 0.3786 + 0.0421 + 0.055 + 0.094 + 0.0049 + 0.0355,
+                in_val: document.getElementById("n_heptane").value,
+                molar_mass: 100.2019,
+                hf: -187.78,
+                sum_factor: {
+                    b: '',
+                    s: '',
+                },
+                sc_coeff: {
+                    oxy: -11,
+                    wat: 8,
+                    car: 7,
+                    sul: 0,
+                },
+                enthalpy: {
+                    dhi: '',
+                    ghv: '',
+                    lhv: '',
+                },
+                ideal_ghv: '', 
+                ideal_lhv: '', 
+                hc_ratio: 16/7,
+                cpi: {
+                    a: 18.5992090,
+                    b: 4.93279710,
+                    c: 5.49265150,
+                },
+                b_eqn: {
+                    a: -71.893811,
+                    b: 0.58010141,
+                    c: -0.0016564015,
+                    d: 0.0000016343582,
+                }
+            },
+            n_octane: { //10
+                val_preload: 0.6694,
+                in_val: document.getElementById("n_octane").value,
+                molar_mass: 114.2285,
+                hf: -208.75,
+                sum_factor: {
+                    b: '',
+                    s: '',
+                },
+                sc_coeff: {
+                    oxy: -12.5,
+                    wat: 9,
+                    car: 8,
+                    sul: 0,
+                },
+                enthalpy: {
+                    dhi: '',
+                    ghv: '',
+                    lhv: '',
+                },
+                ideal_ghv: '', 
+                ideal_lhv: '', 
+                hc_ratio: 2.25,
+                cpi: {
+                    a: 21.1265290,
+                    b: 5.68148970,
+                    c: 6.08923990,
+                },
+                b_eqn: {
+                    a: -105.83461,
+                    b: 0.85704672,
+                    c: -0.0024505652,
+                    d: 0.0000024195803,
+                }
+            },
+            n_nonane: { //11
+                val_preload: 0.0881,
+                in_val: document.getElementById("n_nonane").value,
+                molar_mass: 128.2551,
+                hf: -228.74,
+                sum_factor: {
+                    b: '',
+                    s: '',
+                },
+                sc_coeff: {
+                    oxy: -14,
+                    wat: 10,
+                    car: 9,
+                    sul: 0,
+                },
+                enthalpy: {
+                    dhi: '',
+                    ghv: '',
+                    lhv: '',
+                },
+                ideal_ghv: '', 
+                ideal_lhv: '', 
+                hc_ratio: 20/9,
+                cpi: {
+                    a: 23.6363150,
+                    b: 6.54640460,
+                    c: 5.45373580,
+                },
+                b_eqn: {
+                    a: -145.73558,
+                    b: 1.1834122,
+                    c: -0.0033886758,
+                    d: 0.000003348762,
+                }
+            },
+            hydrogen: { //12
+                val_preload: 0,
+                in_val: document.getElementById("hydrogen").value,
+                molar_mass: 2.0159,
+                hf: 0,
+                sum_factor: {
+                    b: '',
+                    s: '',
+                },
+                sc_coeff: {
+                    oxy: -.5,
+                    wat: 1,
+                    car: 0,
+                    sul: 0,
+                },
+                enthalpy: {
+                    dhi: '',
+                    ghv: '',
+                    lhv: '',
+                },
+                ideal_ghv: '', 
+                ideal_lhv: '', 
+                hc_ratio: 0,
+                cpi: {
+                    a: 3.4414503,
+                    b: 0.12605524,
+                    c: -0.80754203,
+                },
+                b_eqn: {
+                    a: -0.011171849,
+                    b: 0.00019131752,
+                    c: -0.0000004822378,
+                    d: 0.00000000043539747,
+                }
+            },
+            helium: { //13
+                val_preload: 0,
+                in_val: document.getElementById("helium").value,
+                molar_mass: 4.0026,
+                hf: 0,
+                sum_factor: {
+                    b: '',
+                    s: '',
+                },
+                sc_coeff: {
+                    oxy: 0,
+                    wat: 0,
+                    car: 0,
+                    sul: 0,
+                },
+                enthalpy: {
+                    dhi: '',
+                    ghv: '',
+                    lhv: '',
+                },
+                ideal_ghv: '', 
+                ideal_lhv: '', 
+                hc_ratio: 0,
+                cpi: {
+                    a: 2.5,
+                    b: 0,
+                    c: 0,
+                },
+                b_eqn: {
+                    a: 0.013159012,
+                    b: -0.0000058312851,
+                    c: -0.0000000030516593,
+                    d: 0.0000000000093779059,
+                }
+            },
+            nitrogen: { //14
+                val_preload: 1.4299,
+                in_val: document.getElementById("nitrogen").value,
+                molar_mass: 28.0134,
+                hf: 0,
+                sum_factor: {
+                    b: '',
+                    s: '',
+                },
+                sc_coeff: {
+                    oxy: 0,
+                    wat: 0,
+                    car: 0,
+                    sul: 0,
+                },
+                enthalpy: {
+                    dhi: '',
+                    ghv: '',
+                    lhv: '',
+                },
+                ideal_ghv: '', 
+                ideal_lhv: '', 
+                hc_ratio: 0,
+                cpi: {
+                    a: 3.5018867,
+                    b: 0.00301590,
+                    c: 0.05114154,
+                },
+                b_eqn: {
+                    a: -0.2241326,
+                    b: 0.001590904,
+                    c: -0.0000039248102,
+                    d: 0.0000000035385527,
+                }
+            },
+            oxygen: { //15
+                val_preload: 0,
+                in_val: document.getElementById("oxygen").value,
+                molar_mass: 31.9988,
+                hf: 0,
+                sum_factor: {
+                    b: '',
+                    s: '',
+                },
+                sc_coeff: {
+                    oxy: 0,
+                    wat: 0,
+                    car: 0,
+                    sul: 0,
+                },
+                enthalpy: {
+                    dhi: '',
+                    ghv: '',
+                    lhv: '',
+                },
+                ideal_ghv: '', 
+                ideal_lhv: '', 
+                hc_ratio: 0,
+                cpi: {
+                    a: 3.5204293,
+                    b: 0.04298729,
+                    c: 0.30912462,
+                },
+                b_eqn: {
+                    a: -0.2566317,
+                    b: 0.0017508016,
+                    c: -0.0000043295672,
+                    d: 0.0000000039105458,
+                }
+            },
+            carbon_dioxide: { //16
+                val_preload: 0.6878,
+                in_val: document.getElementById("carbon_dioxide").value,
+                molar_mass: 44.0095,
+                hf: -393.51,
+                sum_factor: {
+                    b: '',
+                    s: '',
+                },
+                sc_coeff: {
+                    oxy: 0,
+                    wat: 0,
+                    car: 0,
+                    sul: 0,
+                },
+                enthalpy: {
+                    dhi: '',
+                    ghv: '',
+                    lhv: '',
+                },
+                ideal_ghv: '', 
+                ideal_lhv: '', 
+                hc_ratio: 0,
+                cpi: {
+                    a: 4.3257999,
+                    b: 0.57757890,
+                    c: -0.50862361,
+                },
+                b_eqn: {
+                    a: -1.7276675,
+                    b: 0.012802364,
+                    c: -0.000034908986,
+                    d: 0.000000033610994,
+                }
+            },
+        };
+        return dict;
+    }
+</script>
+<!--end javascript-->
+
+</html>
