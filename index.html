@@ -252,6 +252,8 @@
     var TS = 298.15;
     var tb, pbsi, dhw, air_b, air_z;
 
+    //TODO: impliment testSum on loadup and on submit button.
+
     function preloadSamples() {
         dict = getDict();
 
@@ -294,84 +296,105 @@
             if (dict[key]["in_val"] == '') {dict[key]["in_val"] = 0;}
         };
 
+        percentSum = testSum();
+        if (percentSum) {
+
+            //molar mass output = SUM(mole fraction (inputted) * molar mass (hardcoded))
+            //(val / 100) * molar_mass
+            molar_mass_output = 0;
+            for (key in dict) {
+                molar_mass_output += (dict[key]["in_val"] * (dict[key]["molar_mass"] / 100));
+            };
+            document.getElementById("molar-mass").innerHTML = "<p>Molar Mass: <span>" + molar_mass_output.toFixed(4) + " g/mol</span></p>";
+
+            //summation factor  
+            for (key in dict) {
+                dict[key]["sum_factor"]["b"] = (dict[key]["b_eqn"]["a"] + (dict[key]["b_eqn"]["b"] * tb) + (dict[key]["b_eqn"]["c"] * tb * tb) + (dict[key]["b_eqn"]["d"] * tb * tb * tb));
+                dict[key]["sum_factor"]["s"] = Math.pow(Math.abs((dict[key]["sum_factor"]["b"] * pbsi) / (RGAS * tb)), .5)
+            };
+
+            //relative density
+            sum_mole_fract_molar_mass = 0;
+            sum_mole_fract_summation = 0;
+            for (key in dict) {
+                sum_mole_fract_molar_mass += (dict[key]["in_val"] * (dict[key]["molar_mass"] / 100));
+                sum_mole_fract_summation += (dict[key]["in_val"] * (dict[key]["sum_factor"]["s"]) / 100);
+            };
+            relative_density = ((sum_mole_fract_molar_mass / AIR_MASS) * (air_z / (1 - Math.pow(sum_mole_fract_summation, 2))) * (AIR_MASS / molar_volume));
+            document.getElementById("relative-density").innerHTML = "<p>Relative Density: <span>" + relative_density.toFixed(4) + "</span></p>";
+
+            //GHV
+            //dhi in enthalpy
+            for (key in dict) {
+                e = dict[key]["cpi"]["a"] * RGAS * (tb - TS);
+                f = dict[key]["cpi"]["b"] * Math.pow(10, -2) * RGAS * ((Math.pow((tb - 273.15), 2) - Math.pow((TS - 273.15), 2)) / 2);
+                g = dict[key]["cpi"]["c"] * Math.pow(10, -5) * RGAS * ((Math.pow((tb - 273.15), 3) - Math.pow((TS - 273.15), 3)) / 3);
+                dict[key]["enthalpy"]["dhi"] = e + f + g;
+            };
+            //enthalpy change 
+            for (key in dict) {
+                i = dict[key]["sc_coeff"]["oxy"] * dict["oxygen"]["enthalpy"]["dhi"];
+                j = dict[key]["sc_coeff"]["wat"] * dhw;
+                k = dict[key]["sc_coeff"]["wat"] * getWaterDhi();
+                l = dict[key]["sc_coeff"]["car"] * dict["carbon_dioxide"]["enthalpy"]["dhi"];
+                m = dict[key]["sc_coeff"]["sul"] * getSulferDhi();
+                dict[key]["enthalpy"]["ghv"] = -dict[key]["enthalpy"]["dhi"] + i + j + l + m;
+                dict[key]["enthalpy"]["lhv"] = -dict[key]["enthalpy"]["dhi"] + i + k + l + m;
+            };
+            //ideal hhv and ideal lhv
+            getIdeal()
+
+            //sum(summation factor * mole Fraction) and sum(ideal gas * mole fraction) hhv
+            sum_sum_factor_mole = 0;
+            sum_ideal_gas_mole_h = 0;
+            sum_ideal_gas_mole_l = 0;
+            for (key in dict) {
+                mole_fraction = dict[key]["in_val"] / 100;
+                sum_sum_factor_mole += mole_fraction * dict[key]["sum_factor"]["s"];
+                sum_ideal_gas_mole_h += mole_fraction * dict[key]["ideal_ghv"];
+                sum_ideal_gas_mole_l += mole_fraction * dict[key]["ideal_lhv"];
+            };
+
+            hhv_output = sum_ideal_gas_mole_h / (1 - (Math.pow(sum_sum_factor_mole, 2)))
+            lhv_output = sum_ideal_gas_mole_l / (1 - (Math.pow(sum_sum_factor_mole, 2)))
+            
+            ghvOutputRequirements('hhv-output', hhv_output, lhv_output)
+
+            getMN()
+
+            //other possible failures
+            failPopUps();
+        }
+
+        else {
+            document.getElementById("molar-mass").innerHTML = "<p style='color:red;'>Error: Sum not 100%</p>";
+            document.getElementById("relative-density").innerHTML = "<p hidden=true></p>";
+            document.getElementById("hhv-output").innerHTML = "<p hidden=true></p>";
+            document.getElementById('lhv-output').innerHTML = "<p hidden=true></p>";
+            document.getElementById("methane-number").innerHTML = "<p hidden=true></p>"
+        }
+    };
+
+    function testSum() {
+        //if sample percentage 99.999 > x > 100.001, throw error, no calculations. If sum is out of range, error message and no outputs
         //total percent
         tot_percent = 0;
+        pass = false;
         for (key in dict) {tot_percent += Number(dict[key]["in_val"])};
         
         if (tot_percent > 100 || tot_percent < 0) {
-            document.getElementById("sample-percentage").innerHTML = "<p>Sample Percentage: <span style='color: red;'>" + tot_percent.toFixed(2) + "%</span></p>"
+            document.getElementById("sample-percentage").innerHTML = "<p>Sample Percentage: <span style='color: red;'>" + tot_percent.toFixed(4) + "%</span></p>"
         }
         else {
-            document.getElementById("sample-percentage").innerHTML = "<p>Sample Percentage: <span style='color: green;'>" + tot_percent.toFixed(2) + "%</span></p>"
+            document.getElementById("sample-percentage").innerHTML = "<p>Sample Percentage: <span style='color: green;'>" + tot_percent.toFixed(4) + "%</span></p>"
         }
 
-        //molar mass output = SUM(mole fraction (inputted) * molar mass (hardcoded))
-        //(val / 100) * molar_mass
-        molar_mass_output = 0;
-        for (key in dict) {
-            molar_mass_output += (dict[key]["in_val"] * (dict[key]["molar_mass"] / 100));
-        };
-        document.getElementById("molar-mass").innerHTML = "<p>Molar Mass: <span>" + molar_mass_output.toFixed(4) + " g/mol</span></p>";
+        if (tot_percent > 99.999 && tot_percent < 100.001) {
+            pass = true
+        }
 
-        //summation factor  
-        for (key in dict) {
-            dict[key]["sum_factor"]["b"] = (dict[key]["b_eqn"]["a"] + (dict[key]["b_eqn"]["b"] * tb) + (dict[key]["b_eqn"]["c"] * tb * tb) + (dict[key]["b_eqn"]["d"] * tb * tb * tb));
-            dict[key]["sum_factor"]["s"] = Math.pow(Math.abs((dict[key]["sum_factor"]["b"] * pbsi) / (RGAS * tb)), .5)
-        };
-
-        //relative density
-        sum_mole_fract_molar_mass = 0;
-        sum_mole_fract_summation = 0;
-        for (key in dict) {
-            sum_mole_fract_molar_mass += (dict[key]["in_val"] * (dict[key]["molar_mass"] / 100));
-            sum_mole_fract_summation += (dict[key]["in_val"] * (dict[key]["sum_factor"]["s"]) / 100);
-        };
-        relative_density = ((sum_mole_fract_molar_mass / AIR_MASS) * (air_z / (1 - Math.pow(sum_mole_fract_summation, 2))) * (AIR_MASS / molar_volume));
-        document.getElementById("relative-density").innerHTML = "<p>Relative Density: <span>" + relative_density.toFixed(4) + "</span></p>";
-
-        //GHV
-        //dhi in enthalpy
-        for (key in dict) {
-            e = dict[key]["cpi"]["a"] * RGAS * (tb - TS);
-            f = dict[key]["cpi"]["b"] * Math.pow(10, -2) * RGAS * ((Math.pow((tb - 273.15), 2) - Math.pow((TS - 273.15), 2)) / 2);
-            g = dict[key]["cpi"]["c"] * Math.pow(10, -5) * RGAS * ((Math.pow((tb - 273.15), 3) - Math.pow((TS - 273.15), 3)) / 3);
-            dict[key]["enthalpy"]["dhi"] = e + f + g;
-        };
-        //enthalpy change 
-        for (key in dict) {
-            i = dict[key]["sc_coeff"]["oxy"] * dict["oxygen"]["enthalpy"]["dhi"];
-            j = dict[key]["sc_coeff"]["wat"] * dhw;
-            k = dict[key]["sc_coeff"]["wat"] * getWaterDhi();
-            l = dict[key]["sc_coeff"]["car"] * dict["carbon_dioxide"]["enthalpy"]["dhi"];
-            m = dict[key]["sc_coeff"]["sul"] * getSulferDhi();
-            dict[key]["enthalpy"]["ghv"] = -dict[key]["enthalpy"]["dhi"] + i + j + l + m;
-            dict[key]["enthalpy"]["lhv"] = -dict[key]["enthalpy"]["dhi"] + i + k + l + m;
-        };
-        //ideal hhv and ideal lhv
-        getIdeal()
-
-        //sum(summation factor * mole Fraction) and sum(ideal gas * mole fraction) hhv
-        sum_sum_factor_mole = 0;
-        sum_ideal_gas_mole_h = 0;
-        sum_ideal_gas_mole_l = 0;
-        for (key in dict) {
-            mole_fraction = dict[key]["in_val"] / 100;
-            sum_sum_factor_mole += mole_fraction * dict[key]["sum_factor"]["s"];
-            sum_ideal_gas_mole_h += mole_fraction * dict[key]["ideal_ghv"];
-            sum_ideal_gas_mole_l += mole_fraction * dict[key]["ideal_lhv"];
-        };
-
-        hhv_output = sum_ideal_gas_mole_h / (1 - (Math.pow(sum_sum_factor_mole, 2)))
-        lhv_output = sum_ideal_gas_mole_l / (1 - (Math.pow(sum_sum_factor_mole, 2)))
-        
-        ghvOutputRequirements('hhv-output', hhv_output, lhv_output)
-
-        getMN()
-
-        //other possible failures
-        failPopUps();
-    };
-
+        return(pass)
+    }
     function getWaterDhi() {
         e = 4.0280005 * RGAS * (tb - TS);
         f = 0.039616283 * Math.pow(10, -2) * RGAS * (((Math.pow((tb - 273.15), 2)) - (Math.pow((TS - 273.15), 2))) / 2);
